@@ -82,7 +82,7 @@ const App = () => {
                         ctx?.drawImage(wmi, x, y, w, h)
                         canvas.setAttribute(
                             "data-src",
-                            canvas.toDataURL("image/png", 1)
+                            canvas.toDataURL("image/png")
                         )
                         canvas.addEventListener("click", () => {
                             setPreview(true)
