@@ -5,6 +5,8 @@ import watermark from "./assets/watermark.png"
 
 const App = () => {
     const [raw, setRaw] = useState<FileList | null>(null)
+    const [preview, setPreview] = useState<boolean>(false)
+    const [previewURL, setPreviewURL] = useState<string>("")
 
     const handleChange = () => {
         const preview = document.getElementById("preview-imgs")
@@ -29,6 +31,10 @@ const App = () => {
                 const url = fr.result
                 const img = new Image(100, 100)
                 img.src = url as string
+                img.addEventListener("click", () => {
+                    setPreview(true)
+                    setPreviewURL(img.src)
+                })
                 preview?.appendChild(img)
             }
         }
@@ -42,7 +48,7 @@ const App = () => {
         }
 
         if (!raw || raw.length === 0) {
-            alert("没有待合成的图片")
+            alert("没有待合成的图片，请先选取合成文件。")
             return
         }
 
@@ -74,6 +80,16 @@ const App = () => {
                         const y = height - h - 50
 
                         ctx?.drawImage(wmi, x, y, w, h)
+                        canvas.setAttribute(
+                            "data-src",
+                            canvas.toDataURL("image/png", 1)
+                        )
+                        canvas.addEventListener("click", () => {
+                            setPreview(true)
+                            setPreviewURL(
+                                canvas.getAttribute("data-src") as string
+                            )
+                        })
                     }
                 }
             }
@@ -117,7 +133,12 @@ const App = () => {
                                 className="imgs-container"
                                 id="composed-imgs"
                             ></div>
-                            {!!raw && raw?.length !== 0 && <p>图像上鼠标右键选择 <b>“图像另存为...”</b> 进行保存</p>}
+                            {!!raw && raw?.length !== 0 && (
+                                <p>
+                                    图像上鼠标右键选择 <b>“图像另存为...”</b>{" "}
+                                    进行保存
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -127,6 +148,24 @@ const App = () => {
                 <a href="https://github.com/HerbertHe/yuhe-tools">yuhe-tools</a>{" "}
                 by Herbert He
             </footer>
+
+            {preview && (
+                <div
+                    className="previewBox"
+                    onClick={() => {
+                        setPreview(false)
+                    }}
+                >
+                    {!!previewURL && (
+                        <img
+                            src={previewURL}
+                            alt="预览图"
+                            width="500"
+                            height="500"
+                        />
+                    )}
+                </div>
+            )}
         </div>
     )
 }
